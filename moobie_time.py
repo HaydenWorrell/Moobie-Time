@@ -4,9 +4,9 @@ from pathlib import Path
 
 import discord
 from discord.ext import commands
-from sqlalchemy import create_engine
 
 from moobie_time.config.config import Config
+from moobie_time.data.database import Database
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
