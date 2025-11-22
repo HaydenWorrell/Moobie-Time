@@ -5,8 +5,8 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 
-from moobie_time.config.config import Config
-from moobie_time.data.database import Database
+from config.config import Config
+from data.database import Database
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

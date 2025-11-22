@@ -6,17 +6,17 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from moobie_time.data.movie import Movie
+from data.movie_entry import MovieBase
 
 log = getLogger(__name__)
 class Database:
     def __init__(self, path: Path) -> None:
         self.engine = create_engine(f'sqlite:///{path}')
 
-    def add(self, movie: Movie) -> bool:
+    def add(self, movie: MovieBase) -> bool:
         with Session(self.engine) as session:
             try:
-                slct = select(Movie).where(Movie.id == movie.id)
+                slct = select(MovieBase).where(MovieBase.id == movie.id)
 
                 if existing_movie:= session.execute(slct).scalars().first():
                     log.warning(f"Movie {movie.id} already exists in database with name {existing_movie.name}")
@@ -31,7 +31,7 @@ class Database:
 
         return True
 
-    def remove(self, movie: Movie) -> bool:
+    def remove(self, movie: MovieBase) -> bool:
         with Session(self.engine) as session:
             try:
                 session.delete(movie)
@@ -43,7 +43,7 @@ class Database:
 
         return True
 
-    def add_batch(self, movies: list[Movie]) -> int:
+    def add_batch(self, movies: list[MovieBase]) -> int:
         count = 0
 
         for movie in movies:
@@ -51,9 +51,9 @@ class Database:
 
         return count
 
-    def update_reactions(self, movie: Movie) -> bool:
+    def update_reactions(self, movie: MovieBase) -> bool:
         with Session(self.engine) as session:
-            slct = select(Movie).where(Movie.id == movie.id)
+            slct = select(MovieBase).where(MovieBase.id == movie.id)
 
             if not (existing_movie := session.execute(slct).scalars().first()):
                 log.warning(f"Movie {movie.id} does not exist in database with name {movie.name}")

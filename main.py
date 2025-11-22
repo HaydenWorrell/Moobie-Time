@@ -1,10 +1,11 @@
 import json
 from pathlib import Path
 
-from dotenv import load_dotenv
-from os import environ
+import tvdb_v4_official
+
 from moobie_time import MoobieTime
-from moobie_time.config.config import Config
+from config.config import Config
+
 
 
 def main(config: Config):
@@ -13,6 +14,13 @@ def main(config: Config):
 
 
 if __name__ == "__main__":
-    with open(Path(__file__).parent / "config" / "config.json", "r") as f:
-        config = Config(**json.loads(f))
+
+
+    f = (Path(__file__).parent / "config" / "config.json").read_text(encoding="utf-8-sig")
+    config = Config(**json.loads(f))
+
+    tvdb = tvdb_v4_official.TVDB(config.tvdb_key)
+    movies= tvdb.search('The Avengers')
+    first_result = movies[0]
+
     main()

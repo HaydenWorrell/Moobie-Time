@@ -232,6 +232,7 @@ dependencies = [
     { name = "discord" },
     { name = "pydantic" },
     { name = "sqlalchemy" },
+    { name = "tvdb-v4-official" },
 ]
 
 [package.metadata]
@@ -239,6 +240,7 @@ requires-dist = [
     { name = "discord" },
     { name = "pydantic" },
     { name = "sqlalchemy" },
+    { name = "tvdb-v4-official" },
 ]
 
 [[package]]
@@ -390,6 +392,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f0/f2/840d7b9496825333f532d2e3976b8eadbf52034178aac53630d09fe6e1ef/sqlalchemy-2.0.44.tar.gz", hash = "sha256:0ae7454e1ab1d780aee69fd2aae7d6b8670a581d8847f2d1e0f7ddfbf47e5a22", size = 9819830, upload-time = "2025-10-10T14:39:12.935Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9c/5e/6a29fa884d9fb7ddadf6b69490a9d45fded3b38541713010dad16b77d015/sqlalchemy-2.0.44-py3-none-any.whl", hash = "sha256:19de7ca1246fbef9f9d1bff8f1ab25641569df226364a0e40457dc5457c54b05", size = 1928718, upload-time = "2025-10-10T15:29:45.32Z" },
+]
+
+[[package]]
+name = "tvdb-v4-official"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/63/1ee5d021451205daa455d975ebb795af739f31ca637862c5ee6ae2e1b56f/tvdb_v4_official-1.1.0.tar.gz", hash = "sha256:c315979f71f4b5e76a92202822c31c3ad7e695237d0901afbeec4e09dbb2218d", size = 4325, upload-time = "2022-09-22T19:11:51.285Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/d2/3f3e03fe96c23701fa24890dcd393034f4d37fb1e4649f573b1a6f3cf994/tvdb_v4_official-1.1.0-py3-none-any.whl", hash = "sha256:1d66f87f7d3d36feb4923b37aefd5a048dd208096bc640d1898acb1956fc0ba1", size = 3801, upload-time = "2022-09-22T19:11:49.819Z" },
 ]
 
 [[package]]

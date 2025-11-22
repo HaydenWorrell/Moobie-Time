@@ -3,7 +3,7 @@ from logging import getLogger
 
 from discord.ext import commands
 
-from moobie_time.moobie_time import MoobieTime, permissions_check
+from moobie_time import MoobieTime, permissions_check
 
 log = getLogger(__name__)
 
@@ -13,14 +13,16 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     def on_ready(self) -> None:
-        log.info(f"Admin Cog ready")
+        log.info(f"Admin Cog loaded")
 
 
-    @commands.hybrid_command(name="removesuggestion")
+    @commands.hybrid_command(name="suggest")
     @commands.check(permissions_check)
-    async def remove_suggestion(self, ctx: commands.Context, suggestion_id: str) -> None:
+    async def suggest(self, ctx: commands.Context) -> None:
         pass
-        #TODO: write function to remove suggestions from the list
+
+
+
 
 
 
