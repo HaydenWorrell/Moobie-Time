@@ -3,9 +3,10 @@ from pathlib import Path
 
 import tvdb_v4_official
 
+from data.movie import Movie
 from moobie_time import MoobieTime
 from config.config import Config
-
+from searcher import SearchBoi
 
 
 def main(config: Config):
@@ -18,10 +19,11 @@ if __name__ == "__main__":
 
     f = (Path(__file__).parent / "config" / "config.json").read_text(encoding="utf-8-sig")
     config = Config(**json.loads(f))
-    db = tvdb_v4_official.TVDB(config.tvdb_key)
-    movie_list = db.search('The Avengers')
-    movie_1 = movie_list[0]
-    movie_1_id = movie_1["tvdb_id"]
+    tvdb = tvdb_v4_official.TVDB(config.tvdb_key)
+    movie_search = SearchBoi()
+    movie = movie_search.search(movie_name='The Avengers')
+    movie_str = movie.__repr__()
+    movie_url = movie.construct_url()
 
-    movie_url = "https://www.thetvdb.com/movies/" + movie_1["slug"]
+
     main()
