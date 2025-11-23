@@ -9,3 +9,9 @@ class Movie(BaseModel):
     name: str
     image: str
     year: str
+    slug: str
+
+    async def construct_url(self) -> str:
+
+        url = "https://www.thetvdb.com/movies/" + str(self.slug)
+        return url
