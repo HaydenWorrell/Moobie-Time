@@ -5,8 +5,9 @@ from discord.ext import commands
 from moobie_time import MoobieTime
 from data.movie_entry import MovieBase
 
-
 log = getLogger(__name__)
+
+
 class UserCog(commands.Cog):
     def __init__(self, bot: MoobieTime) -> None:
         self.bot: MoobieTime = bot

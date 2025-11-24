@@ -1,7 +1,6 @@
 ﻿from logging import getLogger
 from pathlib import Path
 
-
 from sqlalchemy import create_engine, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -9,6 +8,8 @@ from sqlalchemy.orm import Session
 from data.movie_entry import MovieBase
 
 log = getLogger(__name__)
+
+
 class Database:
     def __init__(self, path: Path) -> None:
         self.engine = create_engine(f'sqlite:///{path}')
@@ -18,7 +19,7 @@ class Database:
             try:
                 slct = select(MovieBase).where(MovieBase.id == movie.id)
 
-                if existing_movie:= session.execute(slct).scalars().first():
+                if existing_movie := session.execute(slct).scalars().first():
                     log.warning(f"Movie {movie.id} already exists in database with name {existing_movie.name}")
                     return False
 
@@ -63,6 +64,3 @@ class Database:
             session.commit()
 
             return True
-
-
-

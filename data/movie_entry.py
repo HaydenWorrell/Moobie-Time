@@ -1,20 +1,22 @@
 ﻿from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
+from sqlalchemy import String, Integer
 
 
 class Base(DeclarativeBase):
     pass
+
+
 class MovieBase(Base):
     __tablename__ = "movies"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
-    link: Mapped[str] = mapped_column()
-    requester: Mapped[int] = mapped_column()
-    reaction_count: Mapped[int] = mapped_column()
-    message_id: Mapped[int] = mapped_column()
+    id: Mapped[str] = mapped_column(String(), primary_key=True)
+    name: Mapped[str] = mapped_column(String())
+    link: Mapped[str] = mapped_column(String())
+    requester: Mapped[int] = mapped_column(Integer())
+    reaction_count: Mapped[int] = mapped_column(Integer())
+    message_id: Mapped[int] = mapped_column(Integer())
+
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, requester={self.requester})"
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, link={self.link}, requester={self.requester}, reaction_count={self.reaction_count}, message_id={self.message_id})"
 
     def __str__(self) -> str:
         return f"{self.name}"
-
