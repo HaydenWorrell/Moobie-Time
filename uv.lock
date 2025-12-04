@@ -133,19 +133,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cinemagoer"
-version = "2023.5.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "lxml" },
-    { name = "sqlalchemy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/06/de/3aa6eb738b5c5e39f1909bc080a392842841f9af866edb960de2f22af53c/cinemagoer-2023.5.1.tar.gz", hash = "sha256:5ce1d77ae6546701618f11e5b1556a19d18edecad1b6d7d96973ec34941b18f2", size = 259366, upload-time = "2023-05-01T13:44:12.731Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/cc/959c7d74b7d6124852fc4741c154c8f50848f47360955f780636102ec711/cinemagoer-2023.5.1-py3-none-any.whl", hash = "sha256:0c6bc00fbc56cbdd58bc3dbf00cf858770fc127929408460fb28ffe2ca99f83a", size = 297165, upload-time = "2023-05-01T13:44:09.295Z" },
-]
-
-[[package]]
 name = "discord"
 version = "2.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -238,17 +225,10 @@ wheels = [
 ]
 
 [[package]]
-name = "lxml"
-version = "5.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/76/3d/14e82fc7c8fb1b7761f7e748fd47e2ec8276d137b6acfe5a4bb73853e08f/lxml-5.4.0.tar.gz", hash = "sha256:d12832e1dbea4be280b22fd0ea7c9b87f0d8fc51ba06e92dc62d52f804f78ebd", size = 3679479, upload-time = "2025-04-23T01:50:29.322Z" }
-
-[[package]]
 name = "moobie-time"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "cinemagoer" },
     { name = "discord" },
     { name = "pydantic" },
     { name = "sqlalchemy" },
@@ -257,7 +237,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cinemagoer" },
     { name = "discord" },
     { name = "pydantic" },
     { name = "sqlalchemy" },

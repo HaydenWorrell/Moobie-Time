@@ -3,7 +3,7 @@ from pathlib import Path
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, declarative_base
 
 from data.movie_entry import MovieBase
 
