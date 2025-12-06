@@ -1,7 +1,7 @@
 ﻿import json
 from pathlib import Path
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declarative_base
 from sqlalchemy import String, Integer, create_engine
 
 from config.config import Config
@@ -9,6 +9,7 @@ from config.config import Config
 
 class Base(DeclarativeBase):
     pass
+
 
 
 class MovieBase(Base):
@@ -19,6 +20,7 @@ class MovieBase(Base):
     requester: Mapped[int] = mapped_column(Integer())
     reaction_count: Mapped[int] = mapped_column(Integer())
     message_id: Mapped[int] = mapped_column(Integer())
+
 
 
     def __repr__(self) -> str:

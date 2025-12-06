@@ -7,11 +7,11 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from moobie_time import MoobieTime
 from config.config import Config
+from data.movie_entry import Base
 
-Base = declarative_base()
 def main(config: Config):
     bot = MoobieTime(config)
-    Base.metadata.create_all(bot.database.engine)
+    Base.metadata.create_all(bind=bot.database.engine)
     bot.run(config.token)
 
 if __name__ == "__main__":

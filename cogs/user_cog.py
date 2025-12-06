@@ -33,9 +33,9 @@ class UserCog(commands.Cog):
         try:
             result: Movie = movie_search.search(movie_name=movie_name)
             db_movie: MovieBase = result.to_db(ctx.author.id, sum((react.count for react in ctx.message.reactions)), ctx.message.id)
-            self.bot.database.add(db_movie)
+            success = self.bot.database.add(db_movie)
 
-            if not self.bot.database.add(db_movie):
+            if not success:
                 await ctx.send(f"Failed to add {movie_name}")
 
 
@@ -45,7 +45,7 @@ class UserCog(commands.Cog):
 
         result_url: str = result.construct_url()
 
-        embed: Embed = discord.Embed(title=movie_name, color=discord.Color.green(), url=result_url)
+        embed: Embed = discord.Embed(title=result.name, color=discord.Color.green(), url=result_url)
 
         await ctx.send(embed=embed)
 

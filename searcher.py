@@ -23,7 +23,8 @@ class SearchBoi(commands.Cog):
 
 
     def search(self, movie_name: str) -> Movie:
-        movie_list = self.db.search(movie_name)
+        search_term = ''.join(char for char in movie_name if char.isalnum() or char.isspace())
+        movie_list = self.db.search(search_term)
         top_result = movie_list[0]
 
         movie_id: str = top_result["tvdb_id"]
