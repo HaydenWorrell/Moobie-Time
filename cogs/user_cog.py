@@ -36,7 +36,8 @@ class UserCog(commands.Cog):
             success = self.bot.database.add(db_movie)
 
             if not success:
-                await ctx.send(f"Failed to add {movie_name}")
+                await ctx.send(f"Failed to add {movie_name}", ephemeral=True)
+                return
 
 
         except Exception:
