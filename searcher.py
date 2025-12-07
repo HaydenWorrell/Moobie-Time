@@ -1,6 +1,7 @@
 ﻿import json
 from logging import getLogger
 from pathlib import Path
+from typing import Any
 
 import tvdb_v4_official
 
@@ -22,20 +23,27 @@ class SearchBoi(commands.Cog):
         self.db = tvdb_v4_official.TVDB(config.tvdb_key)
 
 
-    def search(self, movie_name: str) -> Movie:
+    def search(self, movie_name: str) -> list[Movie]:
         search_term = ''.join(char for char in movie_name if char.isalnum() or char.isspace())
         movie_list = self.db.search(search_term)
-        top_result = movie_list[0]
 
-        movie_id: str = top_result["tvdb_id"]
-        movie_name: str = top_result["name"]
-        movie_image: str = top_result["image_url"]
-        movie_year: str = top_result["year"]
-        movie_slug: str = top_result["slug"]
+        movie_obj_list = [movie for mov in movie_list[:5] if (movie := self.build_movie(mov))]
 
-        movie_obj = Movie(id=movie_id, name=movie_name, image=movie_image, year=movie_year, slug=movie_slug)
 
-        return movie_obj
+        return movie_obj_list
 
+    @staticmethod
+    def build_movie(movie: dict[str, Any]) -> Movie|None:
+        try:
+            movie_id: str = movie["tvdb_id"]
+            movie_name: str = movie["name"]
+            movie_image: str = movie["image_url"]
+            movie_year: str = movie["year"]
+            movie_slug: str = movie["slug"]
+
+            return Movie(id=movie_id, name=movie_name, image=movie_image, year=movie_year, slug=movie_slug)
+
+        except KeyError:
+            log.error(f"Failed to build movie from {movie.get('name', 'unknown')}")
 
 

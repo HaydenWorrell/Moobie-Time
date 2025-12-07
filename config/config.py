@@ -6,7 +6,7 @@ from typing import Annotated
 
 class Config(BaseModel):
     cogs: Annotated[list[str], Field(default_factory=list)]
-    admin_role: str
+    admin_role: int
     cmd_prefix: str
     token: str
     embed_color: str

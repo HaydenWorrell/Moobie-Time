@@ -57,7 +57,7 @@ class MoobieTime(commands.Bot):
 
 
 async def permissions_check(ctx: commands.Context) -> bool:
-    if int(ctx.bot.config.admin_role) in ctx.author.roles:
+    if any(role for role in ctx.author.roles if role.id == ctx.bot.config.admin_role):
         return True
 
     await ctx.reply(f"You do not have permissions to use this command.", ephemeral=True)

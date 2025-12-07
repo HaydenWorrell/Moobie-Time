@@ -32,13 +32,19 @@ class Database:
 
         return True
 
-    def remove(self, movie: MovieBase) -> bool:
+    def remove(self, movie_name: str) -> bool:
         with Session(self.engine) as session:
             try:
-                session.delete(movie)
+                slct = select(MovieBase).where(MovieBase.name.like(f"%{movie_name}%"))
+
+                if not (existing_movie := session.execute(slct).scalars().first()):
+                    log.warning(f"Movie does not exist in database with name: {movie_name}")
+                    return False
+
+                session.delete(existing_movie)
                 session.commit()
             except SQLAlchemyError:
-                log.exception(f"Failed to remove {movie.name} from database with error \n")
+                log.exception(f"Failed to remove {movie_name} from database with error \n")
                 session.rollback()
                 return False
 

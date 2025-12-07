@@ -2,7 +2,7 @@ from logging import getLogger
 from pathlib import Path
 
 import discord
-from discord import Embed
+from discord import Embed, app_commands
 from discord.ext import commands
 
 from data.database import Database
@@ -31,24 +31,30 @@ class UserCog(commands.Cog):
         movie_search = SearchBoi()
 
         try:
-            result: Movie = movie_search.search(movie_name=movie_name)
-            db_movie: MovieBase = result.to_db(ctx.author.id, sum((react.count for react in ctx.message.reactions)), ctx.message.id)
-            success = self.bot.database.add(db_movie)
+            results: list[Movie] = movie_search.search(movie_name=movie_name)
 
-            if not success:
-                await ctx.send(f"Failed to add {movie_name}", ephemeral=True)
+            if not results:
+                await ctx.send(f"Failed to find results for {movie_name}", ephemeral=True)
                 return
 
+            db_movie_list = []
+
+            for result in results:
+                db_movie_list.append(result.to_db(ctx.author.id, sum((react.count for react in ctx.message.reactions)), ctx.message.id))
 
         except Exception:
-            log.exception(f"Failed to add {movie_name}")
+            log.exception(f"Failed to build db_movie_list")
             return
 
-        result_url: str = result.construct_url()
 
-        embed: Embed = discord.Embed(title=result.name, color=discord.Color.green(), url=result_url)
+
+        embed: Embed = discord.Embed(title=f'Movie Results', description=self.build_embed_text(results), color=discord.Color.green())
 
         await ctx.send(embed=embed)
+
+    @staticmethod
+    def build_embed_text(movie_list: list[Movie]) -> str:
+        return '\n'.join([f"[{movie.name}({movie.year})]({movie.construct_url()})" for movie in movie_list])
 
 async def setup(bot: MoobieTime):
     await bot.add_cog(UserCog(bot))

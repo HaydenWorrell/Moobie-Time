@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declarative_base
-from sqlalchemy import String, Integer, create_engine
+from sqlalchemy import String, Integer, create_engine, Boolean
 
 from config.config import Config
 
@@ -20,6 +20,7 @@ class MovieBase(Base):
     requester: Mapped[int] = mapped_column(Integer())
     reaction_count: Mapped[int] = mapped_column(Integer())
     message_id: Mapped[int] = mapped_column(Integer())
+    watched: Mapped[bool] = mapped_column(Boolean())
 
 
 
