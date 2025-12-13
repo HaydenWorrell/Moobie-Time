@@ -1,15 +1,9 @@
-﻿import json
-from pathlib import Path
-
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declarative_base
-from sqlalchemy import String, Integer, create_engine, Boolean
-
-from config.config import Config
+﻿from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, Integer, Boolean
 
 
 class Base(DeclarativeBase):
     pass
-
 
 
 class MovieBase(Base):
@@ -21,8 +15,6 @@ class MovieBase(Base):
     reaction_count: Mapped[int] = mapped_column(Integer())
     message_id: Mapped[int] = mapped_column(Integer())
     watched: Mapped[bool] = mapped_column(Boolean())
-
-
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, name={self.name}, link={self.link}, requester={self.requester}, reaction_count={self.reaction_count}, message_id={self.message_id})"

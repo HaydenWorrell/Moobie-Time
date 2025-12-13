@@ -1,5 +1,4 @@
 ﻿from logging import getLogger
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from pydantic import BaseModel
 
 from data.movie_entry import MovieBase
@@ -21,7 +20,8 @@ class Movie(BaseModel):
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
         return url
 
-    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, watched_yet: bool = False) -> MovieBase:
+    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0,
+              watched_yet: bool = False) -> MovieBase:
         return MovieBase(
             id=self.id,
             name=self.name,

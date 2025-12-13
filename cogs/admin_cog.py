@@ -1,7 +1,5 @@
 from logging import getLogger
 
-import discord
-
 from discord.ext import commands
 
 from moobie_time import MoobieTime, permissions_check
@@ -29,6 +27,7 @@ class AdminCog(commands.Cog):
             await ctx.reply(f"Successfully removed {movie_name} from database", ephemeral=True)
         else:
             await ctx.reply(f"Failed to remove {movie_name} from database", ephemeral=True)
+
 
 async def setup(bot: MoobieTime):
     await bot.add_cog(AdminCog(bot))

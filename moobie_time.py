@@ -23,15 +23,16 @@ class MoobieTime(commands.Bot):
         path = Path(__file__).parent / config.database_path
         self.database = Database(path)
 
-
         super().__init__(
             intents=INTENTS,
             command_prefix=commands.when_mentioned_or("&"),
-            allowed_mentions = discord.AllowedMentions(everyone=False)
+            allowed_mentions=discord.AllowedMentions(everyone=False)
         )
+
     @property
     def prefix(self):
         return self.config.prefix
+
     async def setup_hook(self):
         # add cogs
         for cog in self.config.cogs:

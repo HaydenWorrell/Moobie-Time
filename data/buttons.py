@@ -1,9 +1,9 @@
 ﻿from logging import getLogger
 
 import discord
-from discord.ext import commands
 
 log = getLogger(__name__)
+
 
 class ButtonView(discord.ui.View):
 

@@ -1,7 +1,7 @@
 [project]
 name = "moobie-time"
 version = "0.1.0"
-description = "Add your description here"
+description = "Discord bot to manage weekly movie night suggestions and watch list"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = ["discord", "pydantic", "sqlalchemy", "tvdb_v4_official"]
+dependencies = ["discord.py", "pydantic", "sqlalchemy", "tvdb_v4_official"]
