@@ -5,6 +5,7 @@ import discord
 from discord import Embed, app_commands
 from discord.ext import commands
 
+from data.buttons import ButtonView
 from data.database import Database
 from data.movie import Movie
 from moobie_time import MoobieTime
@@ -51,6 +52,9 @@ class UserCog(commands.Cog):
         embed: Embed = discord.Embed(title=f'Movie Results', description=self.build_embed_text(results), color=discord.Color.green())
 
         await ctx.send(embed=embed)
+    @commands.hybrid_command(name="button")
+    async def send_button(self, ctx: commands.Context) -> None:
+        await ctx.send("Just fuckin' work, how about that", view=ButtonView())
 
     @staticmethod
     def build_embed_text(movie_list: list[Movie]) -> str:
