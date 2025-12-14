@@ -2,6 +2,7 @@
 from typing import Any
 
 import discord
+from discord import Message
 from discord.ext import commands
 
 from data.database import Database
@@ -52,9 +53,11 @@ class ButtonView(discord.ui.View):
         super().__init__(timeout=300)
         self.movie_list = movie_list
         self.database = database
+        self.message = None
         self.build_buttons(ctx)
 
     async def on_timeout(self):
+        await self.message.delete()
         log.info("button timeout")
 
     def build_buttons(self, ctx: commands.Context) -> None:

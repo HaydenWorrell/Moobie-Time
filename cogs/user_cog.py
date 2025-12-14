@@ -49,7 +49,6 @@ class UserCog(commands.Cog):
             return
         movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
 
-
         self.bot.database.update_reactions(movie)
         log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
 
@@ -70,15 +69,27 @@ class UserCog(commands.Cog):
             return
 
         embed: Embed = discord.Embed(
-            title='Movie Results', description=self.build_embed_text(results), color=discord.Color.green()
+            title='Movie Results',
+            description=self.build_embed_text(results),
+            color=discord.Color.green(),
         )
 
-        await ctx.send(embed=embed, view=ButtonView(ctx, results, self.bot.database))
+        msg_view = ButtonView(
+            ctx,
+            results,
+            self.bot.database,
+        )
+        msg = await ctx.send(
+            embed=embed,
+            view=msg_view,
+        )
+
+        msg_view.message = msg
 
     @staticmethod
     def build_embed_text(movie_list: list[Movie]) -> str:
         return '\n'.join([
-            f"{i + 1} [{movie.name} ({movie.year})]({movie.construct_url()})" for i, movie in enumerate(movie_list)
+            f"{i + 1}. [{movie.name} ({movie.year})]({movie.construct_url()})" for i, movie in enumerate(movie_list)
         ])
 
 

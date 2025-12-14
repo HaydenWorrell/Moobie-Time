@@ -38,7 +38,13 @@ class SearchBoi(commands.Cog):
             movie_year: str = movie.get("year", "unknown")
             movie_slug: str = movie["slug"]
 
-            return Movie(id=movie_id, name=movie_name, image=movie_image, year=movie_year, slug=movie_slug)
+            return Movie(
+                id=movie_id,
+                name=movie_name,
+                image=movie_image,
+                year=movie_year,
+                slug=movie_slug,
+            )
 
         except KeyError:
             log.exception(f"Failed to build movie from {movie.get('name', 'unknown')}")
