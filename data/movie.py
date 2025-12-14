@@ -1,4 +1,6 @@
 ﻿from logging import getLogger
+
+import discord
 from pydantic import BaseModel
 
 from data.movie_entry import MovieBase
@@ -20,8 +22,9 @@ class Movie(BaseModel):
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
         return url
 
-    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0,
-              watched_yet: bool = False) -> MovieBase:
+    def to_db(
+        self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, watched_yet: bool = False
+    ) -> MovieBase:
         return MovieBase(
             id=self.id,
             name=self.name,
@@ -29,5 +32,12 @@ class Movie(BaseModel):
             requester=requester_id,
             reaction_count=reaction_count,
             message_id=message_id,
-            watched=watched_yet
+            watched=watched_yet,
+        )
+
+    def to_embed(self):
+        return discord.Embed(
+            title=f"{self.name} ({self.year})",
+            url=self.construct_url(),
+            color=discord.Color.green(),
         )

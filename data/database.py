@@ -54,7 +54,8 @@ class Database:
         count = 0
 
         for movie in movies:
-            if self.add(movie): count += 1
+            if self.add(movie):
+                count += 1
 
         return count
 
@@ -70,3 +71,30 @@ class Database:
             session.commit()
 
             return True
+
+    def from_message(self, message_id: int) -> MovieBase | None:
+        with Session(self.engine) as session:
+            try:
+                slct = select(MovieBase).where(MovieBase.message_id == message_id)
+                if result := session.execute(slct).scalars().first():
+                    return result
+                log.warning(f"Failed to find suggestion in database with message id {message_id}")
+
+            except SQLAlchemyError:
+                log.exception(f"Failed to find suggestion in database with message id {message_id}")
+
+        return None
+
+    def from_movie_id(self, movie_id: str) -> MovieBase | None:
+
+        with Session(self.engine) as session:
+            try:
+                slct = select(MovieBase).where(MovieBase.id == movie_id)
+                if result := session.execute(slct).scalars().first():
+                    return result
+                log.warning(f"Failed to find suggestion in database with movie id {movie_id}")
+
+            except SQLAlchemyError:
+                log.exception(f"Failed to find suggestion in database with movie id {movie_id}")
+
+        return None

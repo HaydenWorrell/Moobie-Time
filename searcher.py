@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import tvdb_v4_official
-
 from discord.ext import commands
 
 from config.config import Config
@@ -35,11 +34,12 @@ class SearchBoi(commands.Cog):
         try:
             movie_id: str = movie["tvdb_id"]
             movie_name: str = movie["name"]
-            movie_image: str = movie["image_url"]
-            movie_year: str = movie["year"]
+            movie_image: str = movie.get("image_url")
+            movie_year: str = movie.get("year", "unknown")
             movie_slug: str = movie["slug"]
 
             return Movie(id=movie_id, name=movie_name, image=movie_image, year=movie_year, slug=movie_slug)
 
         except KeyError:
-            log.error(f"Failed to build movie from {movie.get('name', 'unknown')}")
+            log.exception(f"Failed to build movie from {movie.get('name', 'unknown')}")
+            return None

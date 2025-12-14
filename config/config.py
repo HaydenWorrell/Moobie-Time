@@ -1,7 +1,7 @@
 ﻿from pathlib import Path
+from typing import Annotated
 
 from pydantic import BaseModel, Field
-from typing import Annotated
 
 
 class Config(BaseModel):
@@ -12,6 +12,7 @@ class Config(BaseModel):
     embed_color: str
     database_path: str
     tvdb_key: str
+    suggest_channel: str
 
     def write_to_json(self) -> None:
         with open(Path(__file__).parent / 'config.json', 'w') as f:
