@@ -23,7 +23,7 @@ class SelectButton(discord.ui.Button):
             existing_msg = await self.ctx.channel.fetch_message(existing_movie.message_id)
             await interaction.response.send_message(
                 f"Could not add {self.movie.name} to the database, already exists here: "
-                f"{existing_msg.to_reference(fail_if_not_exists=False)}",
+                f"{existing_msg.jump_url}",
                 ephemeral=True,
             )
 
