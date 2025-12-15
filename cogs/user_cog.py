@@ -131,6 +131,7 @@ class UserCog(commands.Cog):
                 "**List of available commands:**\n\n"
                 "**/suggest**\n"
                 "**/suggestlink**\n\n"
+                "**All commands will only work in the movie-suggestions channel**\n"
                 "For help with a specific command, type '**/moviehelp <command>**', for example:\n"
                 "'**/moviehelp suggest**'",
                 ephemeral=True,
