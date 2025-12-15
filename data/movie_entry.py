@@ -1,5 +1,5 @@
-﻿from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, Boolean
+﻿from sqlalchemy import Boolean, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
@@ -15,6 +15,8 @@ class MovieBase(Base):
     reaction_count: Mapped[int] = mapped_column(Integer())
     message_id: Mapped[int] = mapped_column(Integer())
     watched: Mapped[bool] = mapped_column(Boolean())
+    slug: Mapped[str] = mapped_column(String())
+    year: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, name={self.name}, link={self.link}, requester={self.requester}, reaction_count={self.reaction_count}, message_id={self.message_id})"

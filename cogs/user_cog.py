@@ -1,7 +1,7 @@
 from logging import getLogger
 
 import discord
-from discord import Embed
+from discord import Colour, Embed
 from discord.ext import commands
 
 from data.buttons import ButtonView
@@ -130,7 +130,9 @@ class UserCog(commands.Cog):
                 "as the reaction counts will be closely associated with which movies are chosen for the polls each week.\n\n"
                 "**List of available commands:**\n\n"
                 "**/suggest**\n"
-                "**/suggestlink**\n\n"
+                "**/suggestlink**\n"
+                "**/topmovies**\n\n"
+                "**/removemovie (MC Officer only)**\n\n"
                 "**All commands will only work in the movie-suggestions channel**\n"
                 "For help with a specific command, type '**/moviehelp <command>**', for example:\n"
                 "'**/moviehelp suggest**'",
@@ -151,6 +153,20 @@ class UserCog(commands.Cog):
                 ephemeral=True,
             )
             return
+        if command.lower() == '/topmovies' or command.lower() == 'topmovies':
+            await ctx.send(
+                "Enter /topmovies to display an ordered list of the top 15 movies from the database, "
+                "sorted by reaction count",
+                ephemeral=True,
+            )
+            return
+        if command.lower() == '/removemovie' or command.lower() == 'removemovie':
+            await ctx.send(
+                "Enter /removemovie <movie name> to remove a movie from the database. "
+                "Make sure to delete the message it was attached to, functionality for that coming soon",
+                ephemeral=True,
+            )
+            return
         await ctx.send(
             "Please enter a valid command, for example:\n'/moviehelp suggest'",
             ephemeral=True,
@@ -159,9 +175,19 @@ class UserCog(commands.Cog):
 
     @commands.hybrid_command(name="topmovies")
     @commands.check(channel_check)
-    async def topmovies(self, ctx: commands.Context) -> None: ...
+    async def topmovies(self, ctx: commands.Context) -> None:
+        embed: Embed = Embed(
+            title="Top Movies",
+            description=self.build_embed_text([
+                Movie.from_db(moviebase)
+                for moviebase in self.bot.database.get_top_movies()
+                if moviebase.watched == False
+            ]),
+            colour=Colour.blue(),
+        )
+        await ctx.send(embed=embed, ephemeral=True)
 
-    # TODO: build movies from the database into a sorted list based on reaction count
+        # TODO: fix reaction counting for removed reactions, mark watched successfully
 
     @staticmethod
     def build_embed_text(movie_list: list[Movie]) -> str:

@@ -33,6 +33,8 @@ class Movie(BaseModel):
             reaction_count=reaction_count,
             message_id=message_id,
             watched=watched_yet,
+            year=self.year,
+            slug=self.slug,
         )
 
     def to_embed(self):
@@ -40,4 +42,14 @@ class Movie(BaseModel):
             title=f"{self.name} ({self.year})",
             url=self.construct_url(),
             color=discord.Color.green(),
+        )
+
+    @staticmethod
+    def from_db(movie_base: MovieBase) -> Movie:
+        return Movie(
+            id=movie_base.id,
+            name=movie_base.name,
+            image='',
+            year=movie_base.year,
+            slug=movie_base.slug,
         )

@@ -15,10 +15,10 @@ class AdminCog(commands.Cog):
     async def on_ready(self) -> None:
         log.info("Admin Cog loaded")
 
-    @commands.hybrid_command(name="watched")
-    @commands.check(permissions_check)
-    async def watched(self, ctx: commands.Context, movie_name: str) -> None:
-        pass
+    # @commands.hybrid_command(name="watched")
+    # @commands.check(permissions_check)
+    # async def watched(self, ctx: commands.Context, movie_name: str) -> None:
+    #     pass
 
     @commands.hybrid_command(name="removemovie")
     @commands.check(permissions_check)
