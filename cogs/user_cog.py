@@ -39,14 +39,26 @@ class UserCog(commands.Cog):
         channel = self.bot.get_channel(reaction.channel_id)
         msg = await channel.fetch_message(reaction.message_id)
 
-        if str(reaction.emoji) != '💖':
+        if str(reaction.emoji) != '💖' and str(reaction.emoji) != '✅':
             await msg.remove_reaction(reaction.emoji, reaction.member)
             log.info("incorrect reaction")
             return
-
+        if str(reaction.emoji) == '✅' and not any(
+            role for role in reaction.member.roles if role.id == self.bot.config.admin_role
+        ):
+            await msg.remove_reaction(reaction.emoji, reaction.member)
+            log.info("non-admin tried to apply check mark")
+            return
         if not (movie := self.bot.database.from_message(reaction.message_id)):
             log.info("no movie found")
             return
+        if str(reaction.emoji) == '✅' and any(
+            role for role in reaction.member.roles if role.id == self.bot.config.admin_role
+        ):
+            movie.watched = True
+            log.info("movie marked as watched")
+            return
+
         movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
 
         self.bot.database.update_reactions(movie)
@@ -58,14 +70,14 @@ class UserCog(commands.Cog):
         movie_search = SearchBoi()
 
         try:
-            results: list[Movie] = movie_search.search(movie_name=movie_name)
+            results: list = movie_search.search(movie_name=movie_name)
 
             if not results:
                 await ctx.send(f"Failed to find results for {movie_name}", ephemeral=True)
                 return
 
         except RuntimeError:
-            log.exception("Failed to build db_movie_list")
+            log.exception("Failed to build db_movie_list \n")
             return
 
         embed: Embed = discord.Embed(
@@ -78,6 +90,37 @@ class UserCog(commands.Cog):
             ctx,
             results,
             self.bot.database,
+            is_link=False,
+        )
+        msg = await ctx.send(
+            embed=embed,
+            view=msg_view,
+        )
+
+        msg_view.message = msg
+
+    @commands.hybrid_command(name="suggestlink")
+    @commands.check(channel_check)
+    async def suggestlink(self, ctx: commands.Context, movie_link: str) -> None:
+        movie_link_lst: list = movie_link.split("/")
+        result: dict = SearchBoi().db.get_movie_by_slug(movie_link_lst[-1])
+        correct_movie_as_lst = [
+            Movie(
+                id=str(result["id"]),
+                name=result["name"],
+                image=result["image"],
+                year=result["year"],
+                slug=result["slug"],
+            )
+        ]
+
+        embed: Embed = correct_movie_as_lst[0].to_embed()
+
+        msg_view: ButtonView = ButtonView(
+            ctx,
+            correct_movie_as_lst,
+            self.bot.database,
+            is_link=True,
         )
         msg = await ctx.send(
             embed=embed,
