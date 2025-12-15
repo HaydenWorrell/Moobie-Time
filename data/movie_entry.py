@@ -19,7 +19,17 @@ class MovieBase(Base):
     year: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, link={self.link}, requester={self.requester}, reaction_count={self.reaction_count}, message_id={self.message_id})"
+        return (
+            f"{self.__class__.__name__}(id={self.id}, "
+            f"name={self.name}, "
+            f"link={self.link}, "
+            f"requester={self.requester}, "
+            f"reaction_count={self.reaction_count}, "
+            f"message_id={self.message_id}, "
+            f"watched={self.watched}, "
+            f"slug={self.slug}, "
+            f"year={self.year})"
+        )
 
     def __str__(self) -> str:
         return f"{self.name}"

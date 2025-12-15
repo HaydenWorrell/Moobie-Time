@@ -54,14 +54,36 @@ class UserCog(commands.Cog):
         if str(reaction.emoji) == '✅' and any(
             role for role in reaction.member.roles if role.id == self.bot.config.admin_role
         ):
-            movie.watched = True
+            self.bot.database.mark_watched(movie)
             log.info("movie marked as watched")
             return
 
-        movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
-        self.bot.database.update_reactions(movie)
+        if str(reaction.emoji) == '💖':
+            movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
+            self.bot.database.update_reactions(movie)
+            log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
+            return
 
-        log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, reaction: discord.RawReactionActionEvent) -> None:
+        if reaction.channel_id != int(self.bot.config.suggest_channel):
+            log.info("incorrect channel")
+            return
+        # channel = self.bot.get_channel(reaction.channel_id)
+        # msg = await channel.fetch_message(reaction.message_id)
+
+        if not (movie := self.bot.database.from_message(reaction.message_id)):
+            log.info("no movie found")
+            return
+        if str(reaction.emoji) == '💖':
+            movie.reaction_count -= 1
+            self.bot.database.update_reactions(movie)
+            log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
+            return
+        if str(reaction.emoji) == '✅':
+            if self.bot.database.mark_unwatched(movie):
+                log.info(f"Updated watched status for {movie.name} to {movie.watched}")
+            return
 
     @commands.hybrid_command(name="suggest")
     @commands.check(channel_check)
@@ -103,6 +125,7 @@ class UserCog(commands.Cog):
                 image=result["image"],
                 year=result["year"],
                 slug=result["slug"],
+                reaction_count=0,
             )
         ]
         embed: Embed = correct_movie_as_lst[0].to_embed()
@@ -156,7 +179,8 @@ class UserCog(commands.Cog):
         if command.lower() == '/topmovies' or command.lower() == 'topmovies':
             await ctx.send(
                 "Enter /topmovies to display an ordered list of the top 15 movies from the database, "
-                "sorted by reaction count",
+                "sorted by reaction count. Displayed as "
+                "'1. <Movie name and hyperlink> (<Movie year>) - <Reaction count>'",
                 ephemeral=True,
             )
             return
@@ -178,21 +202,24 @@ class UserCog(commands.Cog):
     async def topmovies(self, ctx: commands.Context) -> None:
         embed: Embed = Embed(
             title="Top Movies",
-            description=self.build_embed_text([
-                Movie.from_db(moviebase)
-                for moviebase in self.bot.database.get_top_movies()
-                if moviebase.watched == False
+            description=self.build_top_movie_embed([
+                Movie.from_db(moviebase) for moviebase in self.bot.database.get_top_movies()
             ]),
             colour=Colour.blue(),
         )
         await ctx.send(embed=embed, ephemeral=True)
 
-        # TODO: fix reaction counting for removed reactions, mark watched successfully
-
     @staticmethod
     def build_embed_text(movie_list: list[Movie]) -> str:
         return '\n'.join([
             f"{i + 1}. [{movie.name} ({movie.year})]({movie.construct_url()})" for i, movie in enumerate(movie_list)
+        ])
+
+    @staticmethod
+    def build_top_movie_embed(movie_list: list[Movie]) -> str:
+        return '\n'.join([
+            f"{i + 1}. [{movie.name} ({movie.year})]({movie.construct_url()}) - {movie.reaction_count}"
+            for i, movie in enumerate(movie_list)
         ])
 
 

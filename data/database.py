@@ -101,6 +101,30 @@ class Database:
 
     def get_top_movies(self) -> list[MovieBase]:
         with Session(self.engine) as session:
-            slct = select(MovieBase).order_by(MovieBase.reaction_count.desc()).limit(15)
+            slct = (
+                select(MovieBase).where(MovieBase.watched == False).order_by(MovieBase.reaction_count.desc()).limit(15)
+            )
             results: list[MovieBase] = list(session.execute(slct).scalars().all())
             return results
+
+    def mark_watched(self, movie: MovieBase) -> bool:
+        with Session(self.engine) as session:
+            slct = select(MovieBase).where(MovieBase.id == movie.id)
+            if not (existing_movie := session.execute(slct).scalars().first()):
+                log.warning(f"Movie {movie.id} does not exist in database with name {movie.name}")
+                return False
+            existing_movie.watched = True
+            session.commit()
+            return True
+
+    def mark_unwatched(self, movie: MovieBase) -> bool:
+        with Session(self.engine) as session:
+            slct = select(MovieBase).where(MovieBase.id == movie.id)
+            if not (existing_movie := session.execute(slct).scalars().first()):
+                log.warning(f"Movie {movie.id} does not exist in database with name {movie.name}")
+                return False
+            log.info(f"existing_movie.watched = {existing_movie.watched}, movie name: {existing_movie.name}")
+            existing_movie.watched = False
+            log.info(f"existing_movie.watched = {existing_movie.watched}, movie name: {existing_movie.name}")
+            session.commit()
+            return True

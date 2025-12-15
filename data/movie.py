@@ -14,9 +14,10 @@ class Movie(BaseModel):
     image: str
     year: str
     slug: str
+    reaction_count: int
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug})"
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug}, reaction_count={self.reaction_count})"
 
     def construct_url(self) -> str:
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
@@ -52,4 +53,5 @@ class Movie(BaseModel):
             image='',
             year=movie_base.year,
             slug=movie_base.slug,
+            reaction_count=movie_base.reaction_count,
         )
