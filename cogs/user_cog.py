@@ -79,6 +79,7 @@ class UserCog(commands.Cog):
             results,
             self.bot.database,
             is_link=False,
+            message=None,
         )
         msg = await ctx.send(
             embed=embed,
@@ -110,12 +111,56 @@ class UserCog(commands.Cog):
             correct_movie_as_lst,
             self.bot.database,
             is_link=True,
+            message=None,
         )
         msg = await ctx.send(
             embed=embed,
             view=msg_view,
         )
         msg_view.message = msg
+
+    @commands.hybrid_command(name="moviehelp")
+    async def movie_help(self, ctx: commands.Context, command: str | None) -> None:
+        if command is None or command == '':
+            await ctx.send(
+                "MoobieTime is a bot to manage suggestions for weekly movie nights! Suggesting a movie successfully will add it to our database, "
+                "suggesting a movie that is already on our list will redirect you to the message containing a link with the tvdb.com page for the movie in question, "
+                "the message will have a green check mark react if we have already watched it. "
+                "Scroll through this channel to upvote (heart react) your favorite suggestions, "
+                "as the reaction counts will be closely associated with which movies are chosen for the polls each week.\n\n"
+                "**List of available commands:**\n\n"
+                "**/suggest**\n"
+                "**/suggestlink**\n\n"
+                "For help with a specific command, type '**/moviehelp <command>**', for example:\n"
+                "'**/moviehelp suggest**'",
+                ephemeral=True,
+            )
+            return
+        if command.lower() == '/suggest' or command.lower() == 'suggest':
+            await ctx.send(
+                "Enter /suggest <movie name> and this will present a list of search results "
+                "for you to choose from using the corresponding 1-5 buttons at the bottom of the message",
+                ephemeral=True,
+            )
+            return
+        if command.lower() == '/suggestlink' or command.lower() == 'suggestlink':
+            await ctx.send(
+                "Enter /suggest <tvdb link> and this will present a movie with a matching link, "
+                "click the 'Send it!' button to confirm your choice and add the suggestion",
+                ephemeral=True,
+            )
+            return
+        await ctx.send(
+            "Please enter a valid command, for example:\n'/moviehelp suggest'",
+            ephemeral=True,
+        )
+        return
+
+    @commands.hybrid_command(name="topmovies")
+    @commands.check(channel_check)
+    async def topmovies(self, ctx: commands.Context) -> None: ...
+
+    # TODO: build movies from the database into a sorted list based on reaction count
 
     @staticmethod
     def build_embed_text(movie_list: list[Movie]) -> str:

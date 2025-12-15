@@ -13,7 +13,7 @@ class AdminCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        log.info(f"Admin Cog loaded")
+        log.info("Admin Cog loaded")
 
     @commands.hybrid_command(name="watched")
     @commands.check(permissions_check)
