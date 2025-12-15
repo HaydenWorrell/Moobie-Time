@@ -22,7 +22,8 @@ class SelectButton(discord.ui.Button):
         if existing_movie := self.database.from_movie_id(self.movie.id):
             existing_msg = await self.ctx.channel.fetch_message(existing_movie.message_id)
             await interaction.response.send_message(
-                f"Could not add {self.movie.name} to the database, already exists here: {existing_msg.jump_url}",
+                f"Could not add {self.movie.name} ({self.movie.year}) to the database, already exists here: "
+                f"{existing_msg.jump_url}",
                 ephemeral=True,
             )
 
@@ -33,7 +34,7 @@ class SelectButton(discord.ui.Button):
 
             if self.database.add(movie_obj):
                 await interaction.response.send_message(
-                    f"Successfully added {self.movie.name} to the database",
+                    f"Successfully added {self.movie.name} ({self.movie.year}) to the database",
                     ephemeral=True,
                 )
 

@@ -34,7 +34,6 @@ class UserCog(commands.Cog):
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent) -> None:
         if reaction.channel_id != int(self.bot.config.suggest_channel) or reaction.member.bot:
             log.info("incorrect channel")
-
             return
         channel = self.bot.get_channel(reaction.channel_id)
         msg = await channel.fetch_message(reaction.message_id)
@@ -60,32 +59,21 @@ class UserCog(commands.Cog):
             return
 
         movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
-
         self.bot.database.update_reactions(movie)
+
         log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
 
     @commands.hybrid_command(name="suggest")
     @commands.check(channel_check)
     async def suggest(self, ctx: commands.Context, movie_name: str) -> None:
-        movie_search = SearchBoi()
-
-        try:
-            results: list = movie_search.search(movie_name=movie_name)
-
-            if not results:
-                await ctx.send(f"Failed to find results for {movie_name}", ephemeral=True)
-                return
-
-        except RuntimeError:
-            log.exception("Failed to build db_movie_list \n")
+        if not (results := SearchBoi().search(movie_name=movie_name)):
+            await ctx.send(f"Failed to find results for {movie_name}", ephemeral=True)
             return
-
         embed: Embed = discord.Embed(
             title='Movie Results',
             description=self.build_embed_text(results),
             color=discord.Color.green(),
         )
-
         msg_view = ButtonView(
             ctx,
             results,
@@ -96,14 +84,17 @@ class UserCog(commands.Cog):
             embed=embed,
             view=msg_view,
         )
-
         msg_view.message = msg
 
     @commands.hybrid_command(name="suggestlink")
     @commands.check(channel_check)
     async def suggestlink(self, ctx: commands.Context, movie_link: str) -> None:
-        movie_link_lst: list = movie_link.split("/")
-        result: dict = SearchBoi().db.get_movie_by_slug(movie_link_lst[-1])
+        if not (movie_slug := movie_link.split("/")[-1] if len(movie_link.split("/")) > 1 else None):
+            await ctx.send(f"Unable to find or extract movie slug in {movie_link}", ephemeral=True)
+            return
+        if not (result := SearchBoi().db.get_movie_by_slug(movie_slug)):
+            await ctx.send(f"No movie found with slug {movie_slug}", ephemeral=True)
+            return
         correct_movie_as_lst = [
             Movie(
                 id=str(result["id"]),
@@ -113,9 +104,7 @@ class UserCog(commands.Cog):
                 slug=result["slug"],
             )
         ]
-
         embed: Embed = correct_movie_as_lst[0].to_embed()
-
         msg_view: ButtonView = ButtonView(
             ctx,
             correct_movie_as_lst,
@@ -126,7 +115,6 @@ class UserCog(commands.Cog):
             embed=embed,
             view=msg_view,
         )
-
         msg_view.message = msg
 
     @staticmethod
