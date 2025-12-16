@@ -1,23 +1,33 @@
 ﻿from logging import getLogger
+from typing import Annotated
 
 import discord
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from data.movie_entry import MovieBase
 
 log = getLogger(__name__)
 
 
+# class Alias(BaseModel):
+#
+
+
 class Movie(BaseModel):
+    model_config = ConfigDict(extra='ignore')
     id: str
     name: str
-    image: str
-    year: str
+    image: Annotated[str | None, Field(default=None)]
+    year: Annotated[str | None, Field(default=None)]
     slug: str
-    reaction_count: int
+    reaction_count: Annotated[int | None, Field(default=0)]
+    aliases: Annotated[list[str] | None, Field(default_factory=list)]
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug}, reaction_count={self.reaction_count})"
+
+    def __str__(self) -> str:
+        return self.name
 
     def construct_url(self) -> str:
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
@@ -54,4 +64,5 @@ class Movie(BaseModel):
             year=movie_base.year,
             slug=movie_base.slug,
             reaction_count=movie_base.reaction_count,
+            aliases=None,
         )

@@ -99,10 +99,13 @@ class Database:
 
         return None
 
-    def get_top_movies(self) -> list[MovieBase]:
+    def get_top_movies(self, count) -> list[MovieBase]:
         with Session(self.engine) as session:
             slct = (
-                select(MovieBase).where(MovieBase.watched == False).order_by(MovieBase.reaction_count.desc()).limit(15)
+                select(MovieBase)
+                .where(MovieBase.watched == False)
+                .order_by(MovieBase.reaction_count.desc())
+                .limit(count)
             )
             results: list[MovieBase] = list(session.execute(slct).scalars().all())
             return results

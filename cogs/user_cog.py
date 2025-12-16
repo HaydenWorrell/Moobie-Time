@@ -148,7 +148,7 @@ class UserCog(commands.Cog):
             await ctx.send(
                 "MoobieTime is a bot to manage suggestions for weekly movie nights! Suggesting a movie successfully will add it to our database, "
                 "suggesting a movie that is already on our list will redirect you to the message containing a link with the tvdb.com page for the movie in question, "
-                "the message will have a green check mark react if we have already watched it. "
+                "the message will have a green check mark react (:white_check_mark:) if we have already watched it. "
                 "Scroll through this channel to upvote (heart react) your favorite suggestions, "
                 "as the reaction counts will be closely associated with which movies are chosen for the polls each week.\n\n"
                 "**List of available commands:**\n\n"
@@ -199,11 +199,11 @@ class UserCog(commands.Cog):
 
     @commands.hybrid_command(name="topmovies")
     @commands.check(channel_check)
-    async def topmovies(self, ctx: commands.Context) -> None:
+    async def topmovies(self, ctx: commands.Context, count: int = 15) -> None:
         embed: Embed = Embed(
             title="Top Movies",
             description=self.build_top_movie_embed([
-                Movie.from_db(moviebase) for moviebase in self.bot.database.get_top_movies()
+                Movie.from_db(moviebase) for moviebase in self.bot.database.get_top_movies(count)
             ]),
             colour=Colour.blue(),
         )
