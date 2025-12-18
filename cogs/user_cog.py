@@ -13,7 +13,7 @@ log = getLogger(__name__)
 
 
 async def channel_check(ctx: commands.Context) -> bool:
-    if ctx.channel.id == int(ctx.bot.config.suggest_channel):
+    if ctx.channel.id == int(ctx.bot.config.suggest_channel) or ctx.channel.id == int(ctx.bot.config.target_channel):
         return True
 
     channel = ctx.bot.get_channel(int(ctx.bot.config.suggest_channel))
@@ -32,7 +32,7 @@ class UserCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent) -> None:
-        if reaction.channel_id != int(self.bot.config.suggest_channel) or reaction.member.bot:
+        if reaction.channel_id != int(self.bot.config.target_channel) or reaction.member.bot:
             log.info("incorrect channel")
             return
         channel = self.bot.get_channel(reaction.channel_id)
@@ -59,7 +59,6 @@ class UserCog(commands.Cog):
             self.bot.database.mark_watched(movie)
             log.info("movie marked as watched")
             return
-
         if str(reaction.emoji) == '💖':
             movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
             self.bot.database.update_reactions(movie)
@@ -68,7 +67,7 @@ class UserCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, reaction: discord.RawReactionActionEvent) -> None:
-        if reaction.channel_id != int(self.bot.config.suggest_channel):
+        if reaction.channel_id != int(self.bot.config.target_channel):
             log.info("incorrect channel")
             return
         # channel = self.bot.get_channel(reaction.channel_id)
@@ -105,10 +104,10 @@ class UserCog(commands.Cog):
             is_link=False,
             message=None,
         )
-        msg = await ctx.send(
-            embed=embed,
-            view=msg_view,
-        )
+        msg = await ctx.send(embed=embed, view=msg_view, ephemeral=True)
+        #     embed=embed,
+        #     view=msg_view,
+        # )
         msg_view.message = msg
 
     @commands.hybrid_command(name="suggestlink")

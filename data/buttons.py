@@ -19,34 +19,7 @@ class SelectButton(discord.ui.Button):
         super().__init__(**kwargs)
 
     async def callback(self, interaction: discord.Interaction) -> None:
-
-        if existing_movie := self.database.from_movie_id(self.movie.tvdb_id):
-            existing_msg = await self.ctx.channel.fetch_message(existing_movie.message_id)
-            await interaction.response.send_message(
-                f"Could not add {self.movie.name} ({self.movie.year}) to the database, here's the link to the message: "
-                f"{existing_msg.jump_url} "
-                f"Heart react to upvote it!",
-                ephemeral=True,
-            )
-            return
-        else:
-            message = await interaction.channel.send(embed=self.movie.to_embed())
-            await message.add_reaction('💖')
-            movie_obj = self.movie.to_db(message_id=message.id)
-
-            if self.database.add(movie_obj):
-                await interaction.response.send_message(
-                    f"Successfully added {self.movie.name} ({self.movie.year}) to the database",
-                    ephemeral=True,
-                )
-
-            else:
-                await interaction.response.send_message(
-                    f"Could not add {self.movie.name} to the database",
-                    ephemeral=True,
-                )
-
-        await interaction.message.delete()
+        await self.ctx.bot.push_movie(self.ctx, self.movie)
 
 
 class ButtonView(discord.ui.View):

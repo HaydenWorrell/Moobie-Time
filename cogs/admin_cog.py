@@ -1,13 +1,11 @@
-import time
 from logging import getLogger
 
 from discord.ext import commands
 
-from csvreader import build_movie_list
 from moobie_time import MoobieTime, permissions_check
 
 log = getLogger(__name__)
-movie_list = build_movie_list()
+# movie_list = build_movie_list()
 
 
 class AdminCog(commands.Cog):
@@ -23,19 +21,19 @@ class AdminCog(commands.Cog):
     # async def watched(self, ctx: commands.Context, movie_name: str) -> None:
     #     pass
 
-    @commands.hybrid_command(name="import")
-    @commands.check(permissions_check)
-    async def csv_import(self, ctx: commands.Context) -> None:
-
-        for movie in movie_list:
-            embed = movie.to_embed()
-            msg = await ctx.send(embed=embed)
-            ctx.bot.database.add(movie.to_db(message_id=msg.id))
-            await msg.add_reaction('💖')
-            if movie.watched:
-                await msg.add_reaction('✅')
-
-            time.sleep(1)
+    # @commands.hybrid_command(name="import")
+    # @commands.check(permissions_check)
+    # async def csv_import(self, ctx: commands.Context) -> None:
+    #
+    #     for movie in movie_list:
+    #         embed = movie.to_embed()
+    #         msg = await ctx.send(embed=embed)
+    #         ctx.bot.database.add(movie.to_db(message_id=msg.id))
+    #         await msg.add_reaction('💖')
+    #         if movie.watched:
+    #             await msg.add_reaction('✅')
+    #
+    #         time.sleep(1)
 
     @commands.hybrid_command(name="removemovie")
     @commands.check(permissions_check)

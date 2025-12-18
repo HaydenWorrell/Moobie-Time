@@ -13,6 +13,7 @@ class Config(BaseModel):
     database_path: str
     tvdb_key: str
     suggest_channel: str
+    target_channel: str
 
     def write_to_json(self) -> None:
         with open(Path(__file__).parent / 'config.json', 'w') as f:
