@@ -15,16 +15,17 @@ log = getLogger(__name__)
 
 class Movie(BaseModel):
     model_config = ConfigDict(extra='ignore')
-    id: str
+    tvdb_id: str
     name: str
-    image: Annotated[str | None, Field(default=None)]
-    year: Annotated[str | None, Field(default=None)]
+    image: str | None = None
+    year: str | None
     slug: str
-    reaction_count: Annotated[int | None, Field(default=0)]
-    aliases: Annotated[list[str] | None, Field(default_factory=list)]
+    reaction_count: int | None = None
+    aliases: Annotated[list[str], Field(default_factory=list)]
+    watched: bool | None = None
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug}, reaction_count={self.reaction_count})"
+        return f"{self.__class__.__name__}(id={self.tvdb_id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug}, reaction_count={self.reaction_count})"
 
     def __str__(self) -> str:
         return self.name
@@ -33,17 +34,15 @@ class Movie(BaseModel):
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
         return url
 
-    def to_db(
-        self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, watched_yet: bool = False
-    ) -> MovieBase:
+    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0) -> MovieBase:
         return MovieBase(
-            id=self.id,
+            id=self.tvdb_id,
             name=self.name,
             link=self.construct_url(),
             requester=requester_id,
             reaction_count=reaction_count,
             message_id=message_id,
-            watched=watched_yet,
+            watched=self.watched,
             year=self.year,
             slug=self.slug,
         )
@@ -58,11 +57,12 @@ class Movie(BaseModel):
     @staticmethod
     def from_db(movie_base: MovieBase) -> Movie:
         return Movie(
-            id=movie_base.id,
+            tvdb_id=movie_base.id,
             name=movie_base.name,
             image='',
             year=movie_base.year,
             slug=movie_base.slug,
             reaction_count=movie_base.reaction_count,
             aliases=None,
+            watched=movie_base.watched,
         )

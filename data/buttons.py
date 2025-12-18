@@ -20,7 +20,7 @@ class SelectButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction) -> None:
 
-        if existing_movie := self.database.from_movie_id(self.movie.id):
+        if existing_movie := self.database.from_movie_id(self.movie.tvdb_id):
             existing_msg = await self.ctx.channel.fetch_message(existing_movie.message_id)
             await interaction.response.send_message(
                 f"Could not add {self.movie.name} ({self.movie.year}) to the database, here's the link to the message: "

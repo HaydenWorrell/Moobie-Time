@@ -38,9 +38,11 @@ class UserCog(commands.Cog):
         channel = self.bot.get_channel(reaction.channel_id)
         msg = await channel.fetch_message(reaction.message_id)
 
-        if str(reaction.emoji) != '💖' and str(reaction.emoji) != '✅':
+        if str(reaction.emoji) != '💖' and str(reaction.emoji) != '✅' and not reaction.member.bot:
             await msg.remove_reaction(reaction.emoji, reaction.member)
             log.info("incorrect reaction")
+            return
+        if str(reaction.emoji) == '✅' and reaction.member.bot:
             return
         if str(reaction.emoji) == '✅' and not any(
             role for role in reaction.member.roles if role.id == self.bot.config.admin_role
@@ -118,16 +120,7 @@ class UserCog(commands.Cog):
         if not (result := SearchBoi().db.get_movie_by_slug(movie_slug)):
             await ctx.send(f"No movie found with slug {movie_slug}", ephemeral=True)
             return
-        correct_movie_as_lst = [
-            Movie(
-                id=str(result["id"]),
-                name=result["name"],
-                image=result["image"],
-                year=result["year"],
-                slug=result["slug"],
-                reaction_count=0,
-            )
-        ]
+        correct_movie_as_lst = [Movie(**result, tvdb_id=str(result.get('id')))]
         embed: Embed = correct_movie_as_lst[0].to_embed()
         msg_view: ButtonView = ButtonView(
             ctx,

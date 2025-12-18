@@ -30,20 +30,20 @@ class SearchBoi(commands.Cog):
 
         return movie_obj_list
 
-    def search_with_year(self, movie_name: str, year: str, length: int = 5) -> list[Movie]:
+    def search_with_year(self, movie_name: str, year: str, length: int = 5, watched: bool = False) -> list[Movie]:
         search_term = ''.join(char for char in movie_name if char.isalnum() or char.isspace())
         movie_list = self.db.search(search_term, year=year)
 
-        movie_obj_list = [movie for mov in movie_list[:length] if (movie := self.build_movie(mov))]
+        movie_obj_list = [movie for mov in movie_list[:length] if (movie := self.build_movie(mov, watched=watched))]
 
         return movie_obj_list
 
     @staticmethod
-    def build_movie(movie: dict[str, Any]) -> Movie | None:
+    def build_movie(movie: dict[str, Any], watched: bool = False) -> Movie | None:
         try:
             if movie.get("type") != "movie":
                 return None
-            return Movie(**movie)
+            return Movie(**movie, watched=watched)
 
         except KeyError:
             log.exception(f"Failed to build movie from {movie.get('name', 'unknown')}")
