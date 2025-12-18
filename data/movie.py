@@ -21,7 +21,7 @@ class Movie(BaseModel):
     slug: str
     reaction_count: int | None = None
     aliases: list[str] | list[dict] | None = []
-    watched: bool | None = None
+    watched: bool | None = False
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.tvdb_id}, name={self.name}, image={self.image}, year={self.year}, slug={self.slug}, reaction_count={self.reaction_count})"

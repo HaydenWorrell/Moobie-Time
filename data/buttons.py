@@ -16,10 +16,12 @@ class SelectButton(discord.ui.Button):
         self.database = database
         self.movie = movie
         self.ctx = ctx
+        self.interaction = ctx.interaction
         super().__init__(**kwargs)
 
     async def callback(self, interaction: discord.Interaction) -> None:
         await self.ctx.bot.push_movie(self.ctx, self.movie)
+        # await interaction.message.delete()
 
 
 class ButtonView(discord.ui.View):

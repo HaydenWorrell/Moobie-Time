@@ -33,7 +33,7 @@ class UserCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, reaction: discord.RawReactionActionEvent) -> None:
         if reaction.channel_id != int(self.bot.config.target_channel) or reaction.member.bot:
-            log.info("incorrect channel")
+            # log.info("incorrect channel")
             return
         channel = self.bot.get_channel(reaction.channel_id)
         msg = await channel.fetch_message(reaction.message_id)
@@ -68,7 +68,7 @@ class UserCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, reaction: discord.RawReactionActionEvent) -> None:
         if reaction.channel_id != int(self.bot.config.target_channel):
-            log.info("incorrect channel")
+            # log.info("incorrect channel")
             return
 
         if not (movie := self.bot.database.from_message(reaction.message_id)):
@@ -102,12 +102,17 @@ class UserCog(commands.Cog):
             is_link=False,
             message=None,
         )
-        msg = await ctx.send(embed=embed, view=msg_view, ephemeral=True)
+        msg = await ctx.send(
+            embed=embed,
+            view=msg_view,
+            ephemeral=True,
+        )
         msg_view.message = msg
 
     @commands.hybrid_command(name="suggestlink")
     @commands.check(channel_check)
     async def suggestlink(self, ctx: commands.Context, movie_link: str) -> None:
+        await ctx.interaction.response.defer(ephemeral=True)
         if not (movie_slug := movie_link.split("/")[-1] if len(movie_link.split("/")) > 1 else None):
             await ctx.send(f"Unable to find or extract movie slug in {movie_link}", ephemeral=True)
             return
@@ -116,7 +121,6 @@ class UserCog(commands.Cog):
             return
         log.info(f"Movie {result} found using slug: {movie_slug}")
         correct_movie_as_lst = [Movie(**result, tvdb_id=str(result.get('id')))]
-        embed: Embed = correct_movie_as_lst[0].to_embed()
         msg_view: ButtonView = ButtonView(
             ctx,
             correct_movie_as_lst,
@@ -124,8 +128,8 @@ class UserCog(commands.Cog):
             is_link=True,
             message=None,
         )
-        msg = await ctx.send(
-            embed=embed,
+        msg = await ctx.interaction.followup.send(
+            embed=correct_movie_as_lst[0].to_embed(),
             view=msg_view,
             ephemeral=True,
         )
