@@ -131,3 +131,15 @@ class Database:
             log.info(f"existing_movie.watched = {existing_movie.watched}, movie name: {existing_movie.name}")
             session.commit()
             return True
+
+    def update_message_id(self, movie: MovieBase, message_id: int) -> bool:
+        with Session(self.engine) as session:
+            slct = select(MovieBase).where(MovieBase.id == movie.id)
+            if not (existing_movie := session.execute(slct).scalars().first()):
+                log.warning(f"Movie {movie.id} does not exist in database with name {movie.name}")
+                return False
+            log.info(f"existing_movie.message_id = {existing_movie.message_id}, movie name: {existing_movie.name}")
+            existing_movie.message_id = message_id
+            log.info(f"existing_movie.message_id = {existing_movie.message_id}, movie name: {existing_movie.name}")
+            session.commit()
+            return True

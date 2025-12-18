@@ -2,6 +2,7 @@ from logging import getLogger
 
 from discord.ext import commands
 
+from data.movie import Movie
 from moobie_time import MoobieTime, permissions_check
 
 log = getLogger(__name__)
@@ -34,6 +35,31 @@ class AdminCog(commands.Cog):
     #             await msg.add_reaction('✅')
     #
     #         time.sleep(1)
+
+    @commands.hybrid_command(name="addmovie")
+    @commands.check(permissions_check)
+    async def add_movie(
+        self,
+        ctx: commands.Context,
+        movie_id: str,
+        movie_title: str,
+        link: str,
+        year: str = 'unknown',
+        slug: str = '',
+        watched: bool = False,
+    ) -> None:
+        movie: Movie = Movie(
+            tvdb_id=movie_id,
+            name=movie_title,
+            year=year,
+            slug=slug,
+            watched=watched,
+        )
+        await ctx.bot.push_movie(
+            ctx=ctx,
+            movie=movie,
+            link=link,
+        )
 
     @commands.hybrid_command(name="removemovie")
     @commands.check(permissions_check)

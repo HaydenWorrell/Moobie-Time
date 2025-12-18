@@ -10,6 +10,7 @@ from discord.ext import commands
 from config.config import Config
 from data.database import Database
 from data.movie import Movie
+from data.movie_entry import MovieBase
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -63,7 +64,7 @@ class MoobieTime(commands.Bot):
     def log_action(ctx: commands.Context, message: str):
         log.info(f"{ctx.author.name}({ctx.author.id}): {message}")
 
-    async def push_movie(self, ctx: commands.Context, movie: Movie):
+    async def push_movie(self, ctx: commands.Context, movie: Movie | MovieBase, link: str = None):
         channel = await self.movie_channel
         if existing_movie := self.database.from_movie_id(movie.tvdb_id):
             existing_msg = await channel.fetch_message(existing_movie.message_id)
@@ -75,16 +76,15 @@ class MoobieTime(commands.Bot):
             )
             return
         else:
-            message = await channel.send(embed=movie.to_embed())
+            message = await channel.send(embed=movie.to_embed(url=link))
             await message.add_reaction('💖')
-            movie_obj = movie.to_db(message_id=message.id)
+            movie_obj = movie.to_db(message_id=message.id, link=link)
 
             if self.database.add(movie_obj):
                 await ctx.send(
                     f"Successfully added {movie.name} ({movie.year}) to the database",
                     ephemeral=True,
                 )
-
             else:
                 await ctx.send(
                     f"Could not add {movie.name} to the database",

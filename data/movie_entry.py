@@ -1,4 +1,5 @@
-﻿from sqlalchemy import Boolean, Integer, String
+﻿import discord
+from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -33,3 +34,10 @@ class MovieBase(Base):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def to_embed(self):
+        return discord.Embed(
+            title=f"{self.name} ({self.year})",
+            url=self.link,
+            color=discord.Color.green(),
+        )

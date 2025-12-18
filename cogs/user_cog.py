@@ -119,6 +119,7 @@ class UserCog(commands.Cog):
         if not (result := SearchBoi().db.get_movie_by_slug(movie_slug)):
             await ctx.send(f"No movie found with slug {movie_slug}", ephemeral=True)
             return
+        log.info(f"Movie {result} found using slug: {movie_slug}")
         correct_movie_as_lst = [Movie(**result, tvdb_id=str(result.get('id')))]
         embed: Embed = correct_movie_as_lst[0].to_embed()
         msg_view: ButtonView = ButtonView(
@@ -131,6 +132,7 @@ class UserCog(commands.Cog):
         msg = await ctx.send(
             embed=embed,
             view=msg_view,
+            ephemeral=True,
         )
         msg_view.message = msg
 
@@ -170,9 +172,10 @@ class UserCog(commands.Cog):
             return
         if command.lower() == '/topmovies' or command.lower() == 'topmovies':
             await ctx.send(
-                "Enter /topmovies to display an ordered list of the top 15 movies from the database, "
+                "Enter /topmovies <#> to display an ordered list of the top # movies from the database, "
                 "sorted by reaction count. Displayed as "
-                "'1. <Movie name and hyperlink> (<Movie year>) - <Reaction count>'",
+                "'1. <Movie name and hyperlink> (<Movie year>) - <Reaction count>'"
+                "If no # is input with the command, it defaults to the top 15",
                 ephemeral=True,
             )
             return

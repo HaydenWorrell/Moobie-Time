@@ -1,8 +1,7 @@
 ﻿from logging import getLogger
-from typing import Annotated
 
 import discord
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from data.movie_entry import MovieBase
 
@@ -18,10 +17,10 @@ class Movie(BaseModel):
     tvdb_id: str
     name: str
     image: str | None = None
-    year: str | None
+    year: str | None = None
     slug: str
     reaction_count: int | None = None
-    aliases: Annotated[list[str], Field(default_factory=list)]
+    aliases: list[str] | list[dict] | None = []
     watched: bool | None = None
 
     def __repr__(self) -> str:
@@ -34,11 +33,11 @@ class Movie(BaseModel):
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
         return url
 
-    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0) -> MovieBase:
+    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, link: str = None) -> MovieBase:
         return MovieBase(
             id=self.tvdb_id,
             name=self.name,
-            link=self.construct_url(),
+            link=link or self.construct_url(),
             requester=requester_id,
             reaction_count=reaction_count,
             message_id=message_id,
@@ -47,10 +46,10 @@ class Movie(BaseModel):
             slug=self.slug,
         )
 
-    def to_embed(self):
+    def to_embed(self, url: str = None):
         return discord.Embed(
             title=f"{self.name} ({self.year})",
-            url=self.construct_url(),
+            url=url or self.construct_url(),
             color=discord.Color.green(),
         )
 
@@ -63,6 +62,5 @@ class Movie(BaseModel):
             year=movie_base.year,
             slug=movie_base.slug,
             reaction_count=movie_base.reaction_count,
-            aliases=None,
             watched=movie_base.watched,
         )
