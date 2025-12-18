@@ -70,8 +70,6 @@ class UserCog(commands.Cog):
         if reaction.channel_id != int(self.bot.config.target_channel):
             log.info("incorrect channel")
             return
-        # channel = self.bot.get_channel(reaction.channel_id)
-        # msg = await channel.fetch_message(reaction.message_id)
 
         if not (movie := self.bot.database.from_message(reaction.message_id)):
             log.info("no movie found")
@@ -105,9 +103,6 @@ class UserCog(commands.Cog):
             message=None,
         )
         msg = await ctx.send(embed=embed, view=msg_view, ephemeral=True)
-        #     embed=embed,
-        #     view=msg_view,
-        # )
         msg_view.message = msg
 
     @commands.hybrid_command(name="suggestlink")
@@ -149,8 +144,10 @@ class UserCog(commands.Cog):
                 "**/suggest**\n"
                 "**/suggestlink**\n"
                 "**/topmovies**\n\n"
-                "**/removemovie (MC Officer only)**\n\n"
-                "**All commands will only work in the movie-suggestions channel**\n"
+                "**Admin commands:**\n\n"
+                "**/removemovie**\n"
+                "**/addmovie**\n\n"
+                "**All commands (besides moviehelp) will only work in the movie-suggestions channel**\n"
                 "For help with a specific command, type '**/moviehelp <command>**', for example:\n"
                 "'**/moviehelp suggest**'",
                 ephemeral=True,
@@ -183,6 +180,13 @@ class UserCog(commands.Cog):
             await ctx.send(
                 "Enter /removemovie <movie name> to remove a movie from the database. "
                 "Make sure to delete the message it was attached to, functionality for that coming soon",
+                ephemeral=True,
+            )
+            return
+        if command.lower() == '/addmovie' or command.lower() == 'addmovie':
+            await ctx.send(
+                "Enter /addmovie <movie title> <movie link> to force add a movie to the database. "
+                "All optional arguments besides year are only there to provide defaults for the code to pass down on the back end, no need to enter anything",
                 ephemeral=True,
             )
             return
