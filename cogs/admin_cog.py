@@ -41,7 +41,6 @@ class AdminCog(commands.Cog):
     async def add_movie(
         self,
         ctx: commands.Context,
-        movie_id: str,
         movie_title: str,
         link: str,
         year: str = 'unknown',
@@ -49,7 +48,7 @@ class AdminCog(commands.Cog):
         watched: bool = False,
     ) -> None:
         movie: Movie = Movie(
-            tvdb_id=movie_id,
+            tvdb_id=movie_title,
             name=movie_title,
             year=year,
             slug=slug,
