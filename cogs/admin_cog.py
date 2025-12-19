@@ -9,6 +9,8 @@ from moobie_time import MoobieTime, permissions_check
 
 log = getLogger(__name__)
 movie_list = build_movie_list()
+watched_movies = [movie for movie in movie_list if movie.watched]
+unwatched_movies = [mov for mov in movie_list if not mov.watched]
 
 
 class AdminCog(commands.Cog):
@@ -19,17 +21,29 @@ class AdminCog(commands.Cog):
     async def on_ready(self) -> None:
         log.info("Admin Cog loaded")
 
-    @commands.hybrid_command(name="import")
+    @commands.hybrid_command(name="importwatched")
     @commands.check(permissions_check)
-    async def csv_import(self, ctx: commands.Context) -> None:
-
-        for movie in movie_list:
+    async def csv_import_watched(self, ctx: commands.Context) -> None:
+        channel = await ctx.bot.fetch_channel(int(ctx.bot.config.target_channel))
+        for movie in watched_movies:
             embed = movie.to_embed()
-            msg = await ctx.send(embed=embed)
+            msg = await channel.send(embed=embed)
             ctx.bot.database.add(movie.to_db(message_id=msg.id))
             await msg.add_reaction('💖')
-            if movie.watched:
-                await msg.add_reaction('✅')
+            await msg.add_reaction('✅')
+
+            time.sleep(1)
+        log.info("watched_movies imported successfully")
+
+    @commands.hybrid_command(name="import")
+    @commands.check(permissions_check)
+    async def csv_import_unwatched(self, ctx: commands.Context) -> None:
+        channel = await ctx.bot.fetch_channel(int(ctx.bot.config.target_channel))
+        for movie in unwatched_movies:
+            embed = movie.to_embed()
+            msg = await channel.send(embed=embed)
+            ctx.bot.database.add(movie.to_db(message_id=msg.id))
+            await msg.add_reaction('💖')
 
             time.sleep(1)
 

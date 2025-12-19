@@ -21,7 +21,7 @@ class SelectButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction) -> None:
         await self.ctx.bot.push_movie(self.ctx, self.movie)
-        # await interaction.message.delete()
+        # await self.ctx.interaction.message.delete()
 
 
 class ButtonView(discord.ui.View):
