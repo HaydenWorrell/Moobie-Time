@@ -54,12 +54,13 @@ class AdminCog(commands.Cog):
         ctx: commands.Context,
         movie_title: str,
         link: str,
+        tvdb_id: str | None = None,
         year: str = 'unknown',
         slug: str = '',
         watched: bool = False,
     ) -> None:
         movie: Movie = Movie(
-            tvdb_id=movie_title,
+            tvdb_id=tvdb_id or movie_title,
             name=movie_title,
             year=year,
             slug=slug,
