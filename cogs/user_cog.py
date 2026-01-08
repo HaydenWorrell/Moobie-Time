@@ -68,9 +68,7 @@ class UserCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, reaction: discord.RawReactionActionEvent) -> None:
         if reaction.channel_id != int(self.bot.config.target_channel):
-            # log.info("incorrect channel")
             return
-
         if not (movie := self.bot.database.from_message(reaction.message_id)):
             log.info("no movie found")
             return
