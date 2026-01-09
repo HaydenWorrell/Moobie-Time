@@ -33,7 +33,9 @@ class Movie(BaseModel):
         url = "https://www.thetvdb.com/movies/" + str(self.slug)
         return url
 
-    def to_db(self, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, link: str = None) -> MovieBase:
+    def to_db(
+        self, guild_id: int, requester_id: int = 0, reaction_count: int = 0, message_id: int = 0, link: str = None
+    ) -> MovieBase:
         return MovieBase(
             id=self.tvdb_id,
             name=self.name,
@@ -44,6 +46,7 @@ class Movie(BaseModel):
             watched=self.watched,
             year=self.year,
             slug=self.slug,
+            guild_id=guild_id,
         )
 
     def to_embed(self, url: str = None):

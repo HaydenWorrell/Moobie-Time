@@ -66,7 +66,7 @@ class MoobieTime(commands.Bot):
 
     async def push_movie(self, ctx: commands.Context, movie: Movie | MovieBase, link: str = None):
         channel = await self.movie_channel
-        if existing_movie := self.database.from_movie_id(movie.tvdb_id):
+        if existing_movie := self.database.from_movie_id(movie_id=movie.tvdb_id, guild_id=ctx.guild.id):
             existing_msg = await channel.fetch_message(existing_movie.message_id)
             await ctx.send(
                 f"Could not add {movie.name} ({movie.year}) to the database, here's the link to the message: "
@@ -78,7 +78,7 @@ class MoobieTime(commands.Bot):
         else:
             message = await channel.send(embed=movie.to_embed(url=link))
             await message.add_reaction('💖')
-            movie_obj = movie.to_db(message_id=message.id, link=link)
+            movie_obj = movie.to_db(guild_id=ctx.guild.id, message_id=message.id, link=link)
 
             if self.database.add(movie_obj):
                 await ctx.send(

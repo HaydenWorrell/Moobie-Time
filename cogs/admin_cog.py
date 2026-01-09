@@ -28,7 +28,7 @@ class AdminCog(commands.Cog):
         for movie in watched_movies:
             embed = movie.to_embed()
             msg = await channel.send(embed=embed)
-            ctx.bot.database.add(movie.to_db(message_id=msg.id))
+            ctx.bot.database.add(movie.to_db(guild_id=ctx.guild.id, message_id=msg.id))
             await msg.add_reaction('💖')
             await msg.add_reaction('✅')
 
@@ -42,7 +42,7 @@ class AdminCog(commands.Cog):
         for movie in unwatched_movies:
             embed = movie.to_embed()
             msg = await channel.send(embed=embed)
-            ctx.bot.database.add(movie.to_db(message_id=msg.id))
+            ctx.bot.database.add(movie.to_db(guild_id=ctx.guild.id, message_id=msg.id))
             await msg.add_reaction('💖')
 
             time.sleep(1)

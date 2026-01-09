@@ -50,7 +50,7 @@ class UserCog(commands.Cog):
             await msg.remove_reaction(reaction.emoji, reaction.member)
             log.info("non-admin tried to apply check mark")
             return
-        if not (movie := self.bot.database.from_message(reaction.message_id)):
+        if not (movie := self.bot.database.from_message(message_id=reaction.message_id, guild_id=reaction.guild_id)):
             log.info("no movie found")
             return
         if str(reaction.emoji) == '✅' and any(
@@ -69,7 +69,7 @@ class UserCog(commands.Cog):
     async def on_raw_reaction_remove(self, reaction: discord.RawReactionActionEvent) -> None:
         if reaction.channel_id != int(self.bot.config.target_channel):
             return
-        if not (movie := self.bot.database.from_message(reaction.message_id)):
+        if not (movie := self.bot.database.from_message(message_id=reaction.message_id, guild_id=reaction.guild_id)):
             log.info("no movie found")
             return
         if str(reaction.emoji) == '💖':
@@ -204,7 +204,8 @@ class UserCog(commands.Cog):
         embed: Embed = Embed(
             title="Top Movies",
             description=self.build_top_movie_embed([
-                Movie.from_db(moviebase) for moviebase in self.bot.database.get_top_movies(count)
+                Movie.from_db(moviebase)
+                for moviebase in self.bot.database.get_top_movies(count=count, guild_id=ctx.guild.id)
             ]),
             colour=Colour.blue(),
         )

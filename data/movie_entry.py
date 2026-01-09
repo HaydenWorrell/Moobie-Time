@@ -18,6 +18,7 @@ class MovieBase(Base):
     watched: Mapped[bool] = mapped_column(Boolean())
     slug: Mapped[str] = mapped_column(String())
     year: Mapped[str] = mapped_column(String())
+    guild_id: Mapped[int] = mapped_column(Integer())
 
     def __repr__(self) -> str:
         return (
@@ -33,7 +34,7 @@ class MovieBase(Base):
         )
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return f"{self.name}: ({self.year})"
 
     def to_embed(self):
         return discord.Embed(
