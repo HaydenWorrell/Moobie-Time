@@ -9,6 +9,7 @@ class Base(DeclarativeBase):
 
 class MovieBase(Base):
     __tablename__ = "movies"
+    guild_id: Mapped[int] = mapped_column(Integer())
     id: Mapped[str] = mapped_column(String(), primary_key=True)
     name: Mapped[str] = mapped_column(String())
     link: Mapped[str] = mapped_column(String())
@@ -18,7 +19,6 @@ class MovieBase(Base):
     watched: Mapped[bool] = mapped_column(Boolean())
     slug: Mapped[str] = mapped_column(String())
     year: Mapped[str] = mapped_column(String())
-    guild_id: Mapped[int] = mapped_column(Integer())
 
     def __repr__(self) -> str:
         return (

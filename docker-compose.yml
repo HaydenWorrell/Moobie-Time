@@ -1,0 +1,12 @@
+﻿services:
+  moobie-time:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: moobie-time
+    volumes:
+      - ./moobie_time/config/moviedb.db:/app/moobie-time/config/moviedb.db
+    environment:
+      - LOG_LEVEL=DEBUG
+    restart: unless-stopped

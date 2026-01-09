@@ -6,8 +6,8 @@ class Base(DeclarativeBase): ...
 
 
 class ConfigBase(Base):
-    __tablename__ = 'config'
     guild_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    __tablename__ = f'config_{guild_id}'
     target_channel: Mapped[int] = mapped_column(Integer())
     suggest_channel: Mapped[int] = mapped_column(Integer())
     admin_role: Mapped[int] = mapped_column(Integer())
