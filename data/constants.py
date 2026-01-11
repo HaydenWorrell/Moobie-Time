@@ -1,0 +1,2 @@
+﻿UPVOTE = '💖'
+WATCHED = '✅'

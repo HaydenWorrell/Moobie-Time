@@ -8,9 +8,10 @@ from discord import TextChannel
 from discord.ext import commands
 
 from config.config import Config
+from data.constants import UPVOTE
 from data.database import Database
+from data.db_schema import ConfigBase, MovieBase
 from data.movie import Movie
-from data.movie_entry import MovieBase
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -40,6 +41,9 @@ class MoobieTime(commands.Bot):
     @async_cached_property
     async def movie_channel(self) -> TextChannel | None:
         return await self.fetch_channel(int(self.config.target_channel))
+
+    def config_base(self, guild_id: int) -> ConfigBase:
+        return self.database.config_from_id(guild_id=guild_id)
 
     async def setup_hook(self):
         # add cogs
@@ -77,10 +81,10 @@ class MoobieTime(commands.Bot):
             return
         else:
             message = await channel.send(embed=movie.to_embed(url=link))
-            await message.add_reaction('💖')
-            movie_obj = movie.to_db(guild_id=ctx.guild.id, message_id=message.id, link=link)
+            await message.add_reaction(UPVOTE)
+            movie_obj = movie.to_db(link=link)
 
-            if self.database.add(movie_obj):
+            if self.database.add(movie=movie_obj, guild_id=ctx.guild.id, message_id=message.id):
                 await ctx.send(
                     f"Successfully added {movie.name} ({movie.year}) to the database",
                     ephemeral=True,

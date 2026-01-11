@@ -3,9 +3,9 @@ from pathlib import Path
 
 import tvdb_v4_official
 
-from moobie_time import MoobieTime
 from config.config import Config
-from data.movie_entry import Base
+from data.db_schema import Base
+from moobie_time import MoobieTime
 
 
 def main(config: Config):

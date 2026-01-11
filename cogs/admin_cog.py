@@ -28,8 +28,8 @@ class AdminCog(commands.Cog):
     #         embed = movie.to_embed()
     #         msg = await channel.send(embed=embed)
     #         ctx.bot.database.add(movie.to_db(guild_id=ctx.guild.id, message_id=msg.id))
-    #         await msg.add_reaction('💖')
-    #         await msg.add_reaction('✅')
+    #         await msg.add_reaction(UPVOTE)
+    #         await msg.add_reaction(WATCHED)
     #
     #         time.sleep(1)
     #     log.info("watched_movies imported successfully")
@@ -42,7 +42,7 @@ class AdminCog(commands.Cog):
     #         embed = movie.to_embed()
     #         msg = await channel.send(embed=embed)
     #         ctx.bot.database.add(movie.to_db(guild_id=ctx.guild.id, message_id=msg.id))
-    #         await msg.add_reaction('💖')
+    #         await msg.add_reaction(UPVOTE)
     #
     #         time.sleep(1)
 

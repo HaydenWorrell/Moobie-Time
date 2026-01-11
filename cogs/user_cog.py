@@ -5,6 +5,8 @@ from discord import Colour, Embed
 from discord.ext import commands
 
 from data.buttons import ButtonView
+from data.constants import UPVOTE, WATCHED
+from data.db_schema import MovieBase
 from data.movie import Movie
 from moobie_time import MoobieTime
 from searcher import SearchBoi
@@ -38,13 +40,13 @@ class UserCog(commands.Cog):
         channel = self.bot.get_channel(reaction.channel_id)
         msg = await channel.fetch_message(reaction.message_id)
 
-        if str(reaction.emoji) != '💖' and str(reaction.emoji) != '✅' and not reaction.member.bot:
+        if str(reaction.emoji) != UPVOTE and str(reaction.emoji) != WATCHED and not reaction.member.bot:
             await msg.remove_reaction(reaction.emoji, reaction.member)
             log.info("incorrect reaction")
             return
-        if str(reaction.emoji) == '✅' and reaction.member.bot:
+        if str(reaction.emoji) == WATCHED and reaction.member.bot:
             return
-        if str(reaction.emoji) == '✅' and not any(
+        if str(reaction.emoji) == WATCHED and not any(
             role for role in reaction.member.roles if role.id == self.bot.config.admin_role
         ):
             await msg.remove_reaction(reaction.emoji, reaction.member)
@@ -53,15 +55,15 @@ class UserCog(commands.Cog):
         if not (movie := self.bot.database.from_message(message_id=reaction.message_id, guild_id=reaction.guild_id)):
             log.info("no movie found")
             return
-        if str(reaction.emoji) == '✅' and any(
+        if str(reaction.emoji) == WATCHED and any(
             role for role in reaction.member.roles if role.id == self.bot.config.admin_role
         ):
-            self.bot.database.mark_watched(movie)
-            log.info("movie marked as watched")
+            self.bot.database.mark_watched(movie=movie, guild_id=reaction.guild_id)
+            log.info(f"Updated watched status for {movie.name} to True")
             return
-        if str(reaction.emoji) == '💖':
+        if str(reaction.emoji) == UPVOTE:
             movie.reaction_count = msg.reactions[0].count if msg.reactions else 0
-            self.bot.database.update_reactions(movie)
+            self.bot.database.update_reactions(movie=movie, guild_id=reaction.guild_id)
             log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
             return
 
@@ -72,14 +74,14 @@ class UserCog(commands.Cog):
         if not (movie := self.bot.database.from_message(message_id=reaction.message_id, guild_id=reaction.guild_id)):
             log.info("no movie found")
             return
-        if str(reaction.emoji) == '💖':
+        if str(reaction.emoji) == UPVOTE:
             movie.reaction_count -= 1
-            self.bot.database.update_reactions(movie)
+            self.bot.database.update_reactions(movie=movie, guild_id=reaction.guild_id)
             log.info(f"Updated reactions for {movie.name} to {movie.reaction_count}")
             return
-        if str(reaction.emoji) == '✅':
-            if self.bot.database.mark_unwatched(movie):
-                log.info(f"Updated watched status for {movie.name} to {movie.watched}")
+        if str(reaction.emoji) == WATCHED:
+            if self.bot.database.mark_unwatched(movie=movie, guild_id=reaction.guild_id):
+                log.info(f"Updated watched status for {movie.name} to False")
             return
 
     @commands.hybrid_command(name="suggest")
@@ -203,10 +205,9 @@ class UserCog(commands.Cog):
     async def topmovies(self, ctx: commands.Context, count: int = 15) -> None:
         embed: Embed = Embed(
             title="Top Movies",
-            description=self.build_top_movie_embed([
-                Movie.from_db(moviebase)
-                for moviebase in self.bot.database.get_top_movies(count=count, guild_id=ctx.guild.id)
-            ]),
+            description=self.build_top_movie_embed(
+                self.bot.database.get_top_movies(count=count, guild_id=ctx.guild.id)
+            ),
             colour=Colour.blue(),
         )
         await ctx.send(embed=embed, ephemeral=True)
@@ -218,11 +219,18 @@ class UserCog(commands.Cog):
         ])
 
     @staticmethod
-    def build_top_movie_embed(movie_list: list[Movie]) -> str:
-        return '\n'.join([
-            f"{i + 1}. [{movie.name} ({movie.year})]({movie.construct_url()}) - {movie.reaction_count}"
-            for i, movie in enumerate(movie_list)
-        ])
+    def build_top_movie_embed(movie_list: list[tuple[MovieBase, int]]) -> str:
+        top_movies = []
+
+        for i, data in enumerate(movie_list):
+            movie_base, reaction_count = data
+            movie_model = Movie.from_db(movie_base)
+
+            top_movies.append(
+                f"{i + 1}. [{movie_base.name} ({movie_model.year})]({movie_model.construct_url()}) - **{reaction_count} 💖**"
+            )
+
+        return '\n'.join(top_movies)
 
 
 async def setup(bot: MoobieTime):
